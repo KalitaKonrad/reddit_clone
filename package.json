@@ -8,6 +8,7 @@
     "dev": "nodemon dist/index.js ",
     "start": "node dist/index.js",
     "start2": "ts-node src/index.ts",
+    "create:migration": "mikro-orm migration:create",
     "dev2": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [],
@@ -29,6 +30,7 @@
     "@mikro-orm/postgresql": "^4.0.0-rc.2",
     "@types/umzug": "^2.2.3",
     "apollo-server-express": "^2.16.1",
+    "argon2": "^0.27.0",
     "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "graphql": "^15.3.0",
