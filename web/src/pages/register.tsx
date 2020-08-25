@@ -3,21 +3,41 @@ import { Form, Formik } from 'formik';
 import { Container } from '../components/Container';
 import { InputField } from '../components/InputField';
 import { Box, Button, Flex } from '@chakra-ui/core/dist';
+import { useRegisterMutation } from '../generated/graphql';
+import { toErrorMap } from '../utils/toErrorMap';
+import { useRouter } from 'next/router';
 
 interface InitialValues {
   username: string;
   password: string;
 }
 
+const initialValues: InitialValues = {
+  username: '',
+  password: '',
+};
+
 const Register = (): JSX.Element => {
-  const initialValues: InitialValues = {
-    username: '',
-    password: '',
-  };
+  const router = useRouter();
+  const [, register] = useRegisterMutation();
 
   return (
     <Container variant="small">
-      <Formik initialValues={initialValues} onSubmit={values => console.log(values)}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={async (values, { setErrors }) => {
+          const response = await register(values);
+
+          const errors = response.data?.register.errors;
+          const user = response.data?.register.user;
+
+          if (errors) {
+            setErrors(toErrorMap(errors));
+          } else if (user) {
+            router.push('/');
+          }
+        }}
+      >
         {({ isSubmitting, handleSubmit }) => (
           <Form>
             <Flex direction="column">
