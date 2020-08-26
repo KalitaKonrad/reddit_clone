@@ -3,9 +3,11 @@ import { Form, Formik } from 'formik';
 import { Container } from '../components/Container';
 import { InputField } from '../components/InputField';
 import { Box, Button, Flex } from '@chakra-ui/core/dist';
-import { useLoginMutation, useRegisterMutation } from '../generated/graphql';
+import { useLoginMutation } from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
+import { createUrqlClient } from '../utils/createUrqlClient';
+import { withUrqlClient } from 'next-urql';
 
 interface InitialValues {
   username: string;
@@ -58,4 +60,4 @@ const Login = (): JSX.Element => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);
