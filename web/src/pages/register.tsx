@@ -11,11 +11,13 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 
 interface InitialValues {
   username: string;
+  email: string;
   password: string;
 }
 
 const initialValues: InitialValues = {
   username: '',
+  email: '',
   password: '',
 };
 
@@ -28,7 +30,7 @@ const Register = (): JSX.Element => {
       <Formik
         initialValues={initialValues}
         onSubmit={async (values, { setErrors }) => {
-          const response = await register(values);
+          const response = await register({ options: values });
 
           const errors = response.data?.register.errors;
           const user = response.data?.register.user;
@@ -44,6 +46,9 @@ const Register = (): JSX.Element => {
           <Form>
             <Flex direction="column">
               <InputField name="username" label="Username" placeholder="Username" />
+              <Box mt={4}>
+                <InputField name="email" label="Email" placeholder="Email" />
+              </Box>
               <Box mt={4}>
                 <InputField name="password" label="Password" placeholder="Password" type="password" />
               </Box>

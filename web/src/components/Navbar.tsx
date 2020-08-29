@@ -31,13 +31,7 @@ const Navbar = ({}: NavbarProps): JSX.Element => {
     body = (
       <Flex>
         <Box mr={2}>{data?.currentUser.username}</Box>
-        <Button
-          variant="link"
-          isLoading={logoutFetching}
-          onClick={() => {
-            logout();
-          }}
-        >
+        <Button variant="link" isLoading={logoutFetching} onClick={() => logout()}>
           Logout
         </Button>
       </Flex>

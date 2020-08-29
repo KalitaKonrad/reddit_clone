@@ -10,12 +10,12 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 import { withUrqlClient } from 'next-urql';
 
 interface InitialValues {
-  username: string;
+  usernameOrEmail: string;
   password: string;
 }
 
 const initialValues: InitialValues = {
-  username: '',
+  usernameOrEmail: '',
   password: '',
 };
 
@@ -28,7 +28,7 @@ const Login = (): JSX.Element => {
       <Formik
         initialValues={initialValues}
         onSubmit={async (values, { setErrors }) => {
-          const response = await login({ options: values });
+          const response = await login(values);
 
           const errors = response.data?.login.errors;
           const user = response.data?.login.user;
@@ -43,7 +43,7 @@ const Login = (): JSX.Element => {
         {({ isSubmitting, handleSubmit }) => (
           <Form>
             <Flex direction="column">
-              <InputField name="username" label="Username" placeholder="Username" />
+              <InputField name="usernameOrEmail" label="Username or Email" placeholder="Username or email" />
               <Box mt={4}>
                 <InputField name="password" label="Password" placeholder="Password" type="password" />
               </Box>
