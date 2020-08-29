@@ -5,6 +5,7 @@ import argon2 from 'argon2';
 import { COOKIE_NAME } from '../constants';
 import { UsernamePasswordInput } from '../utils/UsernamePasswordInput';
 import { validateRegister } from '../utils/validateRegister';
+import { getConnection } from 'typeorm';
 
 @ObjectType()
 class FieldError {
@@ -27,37 +28,49 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
-  async currentUser(@Ctx() { em, req }: MyContext) {
+  async currentUser(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {
       return null;
     }
 
-    return await em.findOne(User, { id: req.session.userId });
+    return User.findOne(req.session.userId);
   }
 
   @Mutation(() => UserResponse)
-  async register(@Arg('options') options: UsernamePasswordInput, @Ctx() { req, em }: MyContext): Promise<UserResponse> {
+  async register(@Arg('options') options: UsernamePasswordInput, @Ctx() { req }: MyContext): Promise<UserResponse> {
     const errors = validateRegister(options);
 
     if (errors) {
       return { errors };
     }
 
-    const usernameExists = await em.findOne(User, { username: options.username });
+    const hashedPassword = await argon2.hash(options.password);
+    let user;
 
-    if (usernameExists) {
-      return {
-        errors: [{ field: 'username', message: 'Username is already in use' }],
-      };
+    try {
+      user = await User.create({
+        username: options.username,
+        email: options.email,
+        password: hashedPassword,
+      }).save();
+    } catch (err) {
+      if (err.code === '23505') {
+        const usernameExists = err.detail.includes('username');
+        return {
+          errors: [
+            {
+              field: usernameExists ? 'username' : 'email',
+              message: `This ${usernameExists ? 'username' : 'email'} is already taken`,
+            },
+          ],
+        };
+      }
     }
 
-    const hashedPassword = await argon2.hash(options.password);
-    const user = em.create(User, { username: options.username, email: options.email, password: hashedPassword });
-
-    await em.persistAndFlush(user);
-
     // save user id session <- keeps user logged in by setting cookie
-    req.session.userId = user.id;
+    req.session.userId = user?.id;
+
+    console.log(user?.id);
 
     return { user };
   }
@@ -66,11 +79,10 @@ export class UserResolver {
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
-    @Ctx() { em, req }: MyContext,
+    @Ctx() { req }: MyContext,
   ): Promise<UserResponse> {
-    const user = await em.findOne(
-      User,
-      usernameOrEmail.includes('@') ? { email: usernameOrEmail } : { username: usernameOrEmail },
+    const user = await User.findOne(
+      usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { username: usernameOrEmail } },
     );
 
     if (!user) {
@@ -111,8 +123,8 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async forgotPassword(@Arg('email') email: string, @Ctx() { req, em }: MyContext) {
-    const user = await em.findOne(User, { email });
+  async forgotPassword(@Arg('email') email: string, @Ctx() { req }: MyContext) {
+    const user = await User.findOne({ where: { email } });
     return true;
   }
 }

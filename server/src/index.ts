@@ -1,6 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
 import 'reflect-metadata';
-import microConfig from './mikro-orm.config';
 import { __prod__, COOKIE_NAME } from './constants';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
@@ -11,14 +9,23 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 import { MyContext } from './types';
 import cors from 'cors';
+import { createConnection } from 'typeorm';
+import { Post, User } from './entities';
 
 if (__prod__) {
   require('dotenv').config();
 }
 
 const main = async () => {
-  const orm = await MikroORM.init(microConfig);
-  await orm.getMigrator().up();
+  const conn = await createConnection({
+    type: 'postgres',
+    database: 'reddit',
+    username: 'postgres',
+    password: 'postgres',
+    logging: true,
+    synchronize: true, // creates migrations automatically
+    entities: [Post, User],
+  });
 
   const app = express();
 
@@ -52,7 +59,6 @@ const main = async () => {
     }),
     context: ({ req, res }): MyContext =>
       <MyContext>{
-        em: orm.em,
         req,
         res,
       },
