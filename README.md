@@ -10,8 +10,8 @@
 
 ### Frontend
 
-4. `cd web/`
-5. `yarn dev`
+1. `cd web/`
+2. `yarn dev`
 
 ## Migrations and Schema
 
