@@ -3,6 +3,6 @@ fragment UserResponseF on UserResponse {
     ...Error
   }
   user {
-    ...User
+    ...RegularUser
   }
 }

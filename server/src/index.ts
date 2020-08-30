@@ -10,22 +10,13 @@ import connectRedis from 'connect-redis';
 import { MyContext } from './types';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
-import { Post, User } from './entities';
 
 if (__prod__) {
   require('dotenv').config();
 }
 
 const main = async () => {
-  const conn = await createConnection({
-    type: 'postgres',
-    database: 'reddit',
-    username: 'postgres',
-    password: 'postgres',
-    logging: true,
-    synchronize: true, // creates migrations automatically
-    entities: [Post, User],
-  });
+  const conn = await createConnection();
 
   const app = express();
 

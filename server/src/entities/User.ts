@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Post } from '.';
+import { Post } from './Post';
 
 @ObjectType()
 @Entity()

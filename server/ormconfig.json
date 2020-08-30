@@ -5,7 +5,8 @@
   "username": "postgres",
   "password": "postgres",
   "database": "reddit",
-  "synchronize": true,
-  "entities": ["dist/entities/*.js"],
-  "migrations": ["dist/migrations/*.ts"]
+  "synchronize": false,
+  "entities": ["src/entities/*.ts"],
+  "migrations": ["src/migrations/*.js"],
+  "cli": { "migrationsDir": "src/migrations" }
 }
