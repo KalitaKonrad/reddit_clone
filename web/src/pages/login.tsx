@@ -2,12 +2,13 @@ import React from 'react';
 import { Form, Formik } from 'formik';
 import { Container } from '../components/Container';
 import { InputField } from '../components/InputField';
-import { Box, Button, Flex } from '@chakra-ui/core/dist';
+import { Box, Button, Checkbox, Flex, Link } from '@chakra-ui/core/dist';
 import { useLoginMutation } from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import { withUrqlClient } from 'next-urql';
+import NextLink from 'next/link';
 
 interface InitialValues {
   usernameOrEmail: string;
@@ -47,6 +48,13 @@ const Login = (): JSX.Element => {
               <Box mt={4}>
                 <InputField name="password" label="Password" placeholder="Password" type="password" />
               </Box>
+              <Flex mt={2}>
+                <Box ml="auto">
+                  <NextLink href="forgot-password">
+                    <Link>Forgot password?</Link>
+                  </NextLink>
+                </Box>
+              </Flex>
               <Box mt={4}>
                 <Button isFullWidth isLoading={isSubmitting} variantColor="blue" type="submit" onSubmit={handleSubmit}>
                   Login

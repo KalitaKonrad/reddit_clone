@@ -7,6 +7,6 @@
   "database": "reddit",
   "synchronize": false,
   "entities": ["src/entities/*.ts"],
-  "migrations": ["src/migrations/*.js"],
+  "migrations": ["src/migrations/*.ts"],
   "cli": { "migrationsDir": "src/migrations" }
 }
