@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import { withUrqlClient } from 'next-urql';
 import NextLink from 'next/link';
+import { Layout } from '../components/Layout';
 
 interface InitialValues {
   usernameOrEmail: string;
@@ -25,7 +26,7 @@ const Login = (): JSX.Element => {
   const [, login] = useLoginMutation();
 
   return (
-    <Container variant="small">
+    <Layout variant="small">
       <Formik
         initialValues={initialValues}
         onSubmit={async (values, { setErrors }) => {
@@ -37,7 +38,11 @@ const Login = (): JSX.Element => {
           if (errors) {
             setErrors(toErrorMap(errors));
           } else if (user) {
-            router.push('/');
+            if (typeof router.query.next === 'string') {
+              router.push(router.query.next);
+            } else {
+              router.push('/');
+            }
           }
         }}
       >
@@ -64,7 +69,7 @@ const Login = (): JSX.Element => {
           </Form>
         )}
       </Formik>
-    </Container>
+    </Layout>
   );
 };
 

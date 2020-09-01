@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Formik } from 'formik';
-import { Container } from '../components/Container';
+import * as yup from 'yup';
 import { InputField } from '../components/InputField';
 import { Box, Button, Flex } from '@chakra-ui/core/dist';
 import { useRegisterMutation } from '../generated/graphql';
@@ -8,6 +8,8 @@ import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';
+import { Layout } from '../components/Layout';
+import { string } from 'yup';
 
 interface InitialValues {
   username: string;
@@ -21,12 +23,18 @@ const initialValues: InitialValues = {
   password: '',
 };
 
+const validationSchema = yup.object().shape({
+  username: yup.string().required(),
+  email: yup.string().required().email(),
+  password: yup.string().required(),
+});
+
 const Register = (): JSX.Element => {
   const router = useRouter();
   const [, register] = useRegisterMutation();
 
   return (
-    <Container variant="small">
+    <Layout variant="small">
       <Formik
         initialValues={initialValues}
         onSubmit={async (values, { setErrors }) => {
@@ -41,6 +49,7 @@ const Register = (): JSX.Element => {
             router.push('/');
           }
         }}
+        validationSchema={validationSchema}
       >
         {({ isSubmitting, handleSubmit }) => (
           <Form>
@@ -61,7 +70,7 @@ const Register = (): JSX.Element => {
           </Form>
         )}
       </Formik>
-    </Container>
+    </Layout>
   );
 };
 

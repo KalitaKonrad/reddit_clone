@@ -39,7 +39,7 @@ const Navbar = ({}: NavbarProps): JSX.Element => {
   }
 
   return (
-    <Flex bg="tomato" p={4} ml="auto">
+    <Flex bg="tomato" position="sticky" top={0} zIndex={5} p={4} ml="auto">
       <Box ml="auto">{body}</Box>
     </Flex>
   );

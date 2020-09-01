@@ -25,8 +25,9 @@ import { createUrqlClient } from '../../utils/createUrqlClient';
 import { withUrqlClient } from 'next-urql';
 import NextLink from 'next/link';
 
-const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
+const ChangePassword: NextPage = () => {
   const router = useRouter();
+  console.log(router.query);
   const [, changePassword] = useChangePasswordMutation();
   const [tokenError, setTokenError] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,7 +45,7 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
         onSubmit={async (values, { setErrors }) => {
           const response = await changePassword({
             newPassword: values.newPassword,
-            token,
+            token: typeof router.query.token === 'string' ? router.query.token : '',
           });
 
           if (response.data?.changePassword.errors) {
@@ -93,13 +94,6 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
       </Formik>
     </Container>
   );
-};
-
-ChangePassword.getInitialProps = ({ query }) => {
-  // Nextjs function - allows to get any parameters passed to url
-  return {
-    token: query.token as string,
-  };
 };
 
 export default withUrqlClient(createUrqlClient)(ChangePassword);

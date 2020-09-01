@@ -1,17 +1,34 @@
-import React from 'react';
-import { Container } from '../components/Container';
+import React, { useEffect } from 'react';
+import * as yup from 'yup';
 import { Form, Formik } from 'formik';
 import { Box, Button, Flex } from '@chakra-ui/core/dist';
 import { InputField } from '../components/InputField';
+import { useCreatePostMutation, useCurrentUserQuery } from '../generated/graphql';
+import { createUrqlClient } from '../utils/createUrqlClient';
+import { withUrqlClient } from 'next-urql';
+import { useRouter } from 'next/router';
+import { Layout } from '../components/Layout';
+import { useIsAuth } from '../utils/useIsAuth';
 
 const CreatePost = () => {
+  const [, createPost] = useCreatePostMutation();
+  const router = useRouter();
+  useIsAuth();
+
   return (
-    <Container variant="small">
+    <Layout variant="small">
       <Formik
         initialValues={{ title: '', text: '' }}
-        onSubmit={async (values, { setErrors }) => {
-          console.log(values);
+        onSubmit={async values => {
+          const { error } = await createPost({ input: values });
+          if (!error) {
+            router.push('/');
+          }
         }}
+        validationSchema={yup.object().shape({
+          title: yup.string().required(),
+          text: yup.string().required(),
+        })}
       >
         {({ isSubmitting, handleSubmit }) => (
           <Form>
@@ -29,8 +46,8 @@ const CreatePost = () => {
           </Form>
         )}
       </Formik>
-    </Container>
+    </Layout>
   );
 };
 
-export default CreatePost;
+export default withUrqlClient(createUrqlClient)(CreatePost);

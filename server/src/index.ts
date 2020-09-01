@@ -18,6 +18,8 @@ if (__prod__) {
 const main = async () => {
   const conn = await createConnection();
 
+  await conn.runMigrations().catch(() => console.log('Migrations crashed!'));
+
   const app = express();
 
   const RedisStore = connectRedis(session);

@@ -1,8 +1,10 @@
 import { Box } from '@chakra-ui/core';
 import React, { ReactNode } from 'react';
 
+export type ContainerVariant = 'small' | 'regular';
+
 interface ContainerProps {
-  variant?: 'small' | 'regular';
+  variant?: ContainerVariant;
   children?: ReactNode | ReactNode[];
 }
 
